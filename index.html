@@ -27,6 +27,20 @@ body {
     to { opacity: 1; }
 }
 
+.copyright {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    opacity: 0.3;
+    font-weight: 300;
+    margin: 0;
+    z-index: 1000;
+    width: 100%;
+    text-align: center;
+}
+
 section {
     min-height: 100vh;
     display: flex;
@@ -232,17 +246,6 @@ section {
         inset 0 -4px 8px rgba(11, 15, 16, 0.2);
 }
 
-.copyright {
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 15px;
-    opacity: 0.3;
-    font-weight: 300;
-    margin: 0;
-    z-index: 1000;
-}
-
 @media (max-width: 900px) {
     .links-grid {
         grid-template-columns: 1fr;
@@ -306,13 +309,18 @@ section {
         padding: 16px 25px;
         max-width: 100%;
     }
+    
+    .copyright {
+        font-size: 13px;
+        top: 10px;
+    }
 }
 </style>
 </head>
 <body>
 
 <div class="copyright">created by xaynov for counter-culture</div>
-    
+
 <section id="hero">
     <div class="container">
         <div class="logo-container">
@@ -385,4 +393,3 @@ window.addEventListener('load', checkLocalImage);
 
 </body>
 </html>
-
