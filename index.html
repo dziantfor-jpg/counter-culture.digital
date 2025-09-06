@@ -37,7 +37,8 @@ section {
 }
 
 #hero {
-    justify-content: center;
+    justify-content: flex-start; /* элементы сдвинуты вверх */
+    padding-top: 20px;
 }
 
 #content {
@@ -57,7 +58,7 @@ section {
 }
 
 .logo-container {
-    margin-bottom: 30px;
+    margin: 30px 0;
 }
 
 .logo {
@@ -72,11 +73,6 @@ section {
     font-weight: 700;
     letter-spacing: 0.5px;
     text-align: center;
-}
-
-@keyframes glow {
-    from { text-shadow: 0 0 15px rgba(253,253,253,0.7),0 0 30px rgba(253,253,253,0.5),0 0 45px rgba(253,253,253,0.3); }
-    to { text-shadow: 0 0 20px rgba(253,253,253,0.8),0 0 40px rgba(253,253,253,0.6),0 0 60px rgba(253,253,253,0.4); }
 }
 
 .subtitle {
@@ -233,14 +229,11 @@ section {
 }
 
 .copyright {
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 15px;
-    opacity: 0.3;
+    opacity: 0.6;
     font-weight: 300;
-    margin: 0;
-    z-index: 1000;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 @media (max-width: 900px) {
@@ -311,10 +304,9 @@ section {
 </head>
 <body>
 
-<div class="copyright">created by xaynov for counter-culture</div>
-
 <section id="hero">
     <div class="container">
+        <div class="copyright">created by xaynov for counter-culture</div>
         <div class="logo-container">
             <img src="photo_2025-05-19_23-23-57.png" alt="Контр-Культура" class="logo">
         </div>
@@ -385,5 +377,3 @@ window.addEventListener('load', checkLocalImage);
 
 </body>
 </html>
-
-
