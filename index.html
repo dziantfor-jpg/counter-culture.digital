@@ -107,6 +107,15 @@ section {
     padding: 40px 20px;
 }
 
+#contacts {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(to bottom, rgba(11, 15, 16, 0.7), rgba(11, 15, 16, 0.9));
+}
+
 .container {
     width: 100%;
     max-width: 1100px;
@@ -291,6 +300,92 @@ section {
         inset 0 -4px 8px rgba(11, 15, 16, 0.2);
 }
 
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    width: 100%;
+    max-width: 800px;
+    margin: 40px auto;
+    justify-items: center;
+}
+
+.contact-item {
+    background: rgba(11, 15, 16, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(253, 253, 253, 0.1),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(253, 253, 253, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(253, 253, 253, 0.1),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 18px;
+    color: #FDFDFD;
+}
+
+.contact-detail {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    font-weight: 300;
+    flex-grow: 1;
+}
+
+.contact-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(253, 253, 253, 0.1);
+    color: #FDFDFD;
+    padding: 14px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(253, 253, 253, 0.1),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(253, 253, 253, 0.05);
+    width: 100%;
+    max-width: 220px;
+}
+
+.contact-action:hover {
+    background: rgba(253, 253, 253, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(253, 253, 253, 0.1),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width: 900px) {
     .links-grid {
         grid-template-columns: 1fr;
@@ -298,6 +393,10 @@ section {
     
     .reviews-item {
         grid-column: 1;
+    }
+    
+    .contacts-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -368,6 +467,26 @@ section {
         width: 20px;
         height: 20px;
     }
+    
+    .contact-item {
+        padding: 25px 20px;
+    }
+
+    .contact-info {
+        font-size: 18px;
+    }
+    
+    .contact-detail {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .contact-action {
+        width: 100%;
+        max-width: none;
+        font-size: 16px;
+        padding: 14px 20px;
+    }
 }
 
 /* Стили для сенсорных устройств */
@@ -380,6 +499,14 @@ section {
 }
 
 .touch-device .contact-button:hover {
+    transform: none;
+}
+
+.touch-device .contact-item:hover {
+    transform: none;
+}
+
+.touch-device .contact-action:hover {
     transform: none;
 }
 </style>
@@ -437,8 +564,20 @@ section {
             </div>
         </div>
 
-        <div class="contact-section">
-            <a href="https://t.me/osintfigure" class="contact-button" target="_blank"><i class="fab fa-telegram"></i> Связь с владельцем</a>
+    </div>
+</section>
+
+<section id="contacts">
+    <div class="container">
+        <h2 class="title">Свяжитесь с нами</h2>
+        <p class="subtitle">Для обращения используйте Telegram</p>
+        
+        <div class="contacts-grid">
+            <div class="contact-item">
+                <div class="contact-info"><i class="fab fa-telegram"></i> <span>Telegram</span></div>
+                <div class="contact-detail">Написать напрямую в Telegram основателю проекта</div>
+                <a href="https://t.me/osintfigure" class="contact-action" target="_blank"><i class="fas fa-paper-plane"></i> Написать</a>
+            </div>
         </div>
     </div>
 </section>
@@ -469,25 +608,40 @@ function handleScroll(e) {
     
     if (isScrolling) return;
     
-    if (e.deltaY > 0 && lastScroll === 0) {
+    // Скролл вниз
+    if (e.deltaY > 0) {
         isScrolling = true;
-        document.getElementById("content").scrollIntoView({behavior: "smooth"});
-        lastScroll = 1;
         
-        // Скрываем индикатор скролла
-        document.querySelector('.scroll-indicator').classList.add('hidden');
+        if (lastScroll === 0) {
+            // Переход от героя к контенту
+            document.getElementById("content").scrollIntoView({behavior: "smooth"});
+            lastScroll = 1;
+            document.querySelector('.scroll-indicator').classList.add('hidden');
+        } else if (lastScroll === 1) {
+            // Переход от контента к контактам
+            document.getElementById("contacts").scrollIntoView({behavior: "smooth"});
+            lastScroll = 2;
+        }
         
         // Разблокируем скролл после завершения анимации
         setTimeout(() => {
             isScrolling = false;
         }, 1000);
-    } else if (e.deltaY < 0 && lastScroll === 1) {
+    } 
+    // Скролл вверх
+    else if (e.deltaY < 0) {
         isScrolling = true;
-        document.getElementById("hero").scrollIntoView({behavior: "smooth"});
-        lastScroll = 0;
         
-        // Показываем индикатор скролла
-        document.querySelector('.scroll-indicator').classList.remove('hidden');
+        if (lastScroll === 2) {
+            // Переход от контактов к контенту
+            document.getElementById("content").scrollIntoView({behavior: "smooth"});
+            lastScroll = 1;
+        } else if (lastScroll === 1) {
+            // Переход от контента к герою
+            document.getElementById("hero").scrollIntoView({behavior: "smooth"});
+            lastScroll = 0;
+            document.querySelector('.scroll-indicator').classList.remove('hidden');
+        }
         
         // Разблокируем скролл после завершения анимации
         setTimeout(() => {
@@ -513,16 +667,27 @@ if (isTouchDevice()) {
         
         // Определяем направление свайпа
         if (Math.abs(diffY) > 50) { // Минимальная дистанция свайпа
-            if (diffY < 0 && lastScroll === 0) {
-                // Свайп вниз
-                document.getElementById("content").scrollIntoView({behavior: "smooth"});
-                lastScroll = 1;
-                document.querySelector('.scroll-indicator').classList.add('hidden');
-            } else if (diffY > 0 && lastScroll === 1) {
-                // Свайп вверх
-                document.getElementById("hero").scrollIntoView({behavior: "smooth"});
-                lastScroll = 0;
-                document.querySelector('.scroll-indicator').classList.remove('hidden');
+            // Свайп вниз
+            if (diffY < 0) {
+                if (lastScroll === 0) {
+                    document.getElementById("content").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 1;
+                    document.querySelector('.scroll-indicator').classList.add('hidden');
+                } else if (lastScroll === 1) {
+                    document.getElementById("contacts").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 2;
+                }
+            } 
+            // Свайп вверх
+            else if (diffY > 0) {
+                if (lastScroll === 2) {
+                    document.getElementById("content").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 1;
+                } else if (lastScroll === 1) {
+                    document.getElementById("hero").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 0;
+                    document.querySelector('.scroll-indicator').classList.remove('hidden');
+                }
             }
         }
     }, { passive: true });
@@ -540,4 +705,3 @@ window.addEventListener('load', checkLocalImage);
 
 </body>
 </html>
-
