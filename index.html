@@ -594,22 +594,18 @@ let lastScroll = 0;
 let isScrolling = false;
 let wheelTimeout;
 
-// Функция для определения, находится ли пользователь в конце секции
 function isAtSectionEnd(section) {
     const rect = section.getBoundingClientRect();
     const sectionBottom = rect.bottom;
     const windowHeight = window.innerHeight;
     
-    // Если низ секции близко к низу окна (в пределах 50px)
     return sectionBottom <= windowHeight + 50;
 }
 
-// Функция для определения, находится ли пользователь в начале секции
 function isAtSectionTop(section) {
     const rect = section.getBoundingClientRect();
     const sectionTop = rect.top;
     
-    // Если верх секции близко к верху окна (в пределах 50px)
     return sectionTop >= -50 && sectionTop <= 50;
 }
 
@@ -622,7 +618,6 @@ function smoothScrollTo(element) {
     }, 800);
 }
 
-// Обработчик скролла для ПК
 function handleWheelScroll(e) {
     if (isTouchDevice() || isScrolling) return;
     
@@ -632,7 +627,7 @@ function handleWheelScroll(e) {
         const contentSection = document.getElementById("content");
         const contactsSection = document.getElementById("contacts");
         
-        if (e.deltaY > 20) { // Скролл вниз
+        if (e.deltaY > 20) {
             if (lastScroll === 0 && isAtSectionEnd(heroSection)) {
                 smoothScrollTo(contentSection);
                 lastScroll = 1;
@@ -642,7 +637,7 @@ function handleWheelScroll(e) {
                 lastScroll = 2;
             }
         } 
-        else if (e.deltaY < -20) { // Скролл вверх
+        else if (e.deltaY < -20) {
             if (lastScroll === 2 && isAtSectionTop(contactsSection)) {
                 smoothScrollTo(contentSection);
                 lastScroll = 1;
@@ -655,7 +650,6 @@ function handleWheelScroll(e) {
     }, 100);
 }
 
-// Обработчик для мобильных устройств
 function handleTouchScroll() {
     if (!isTouchDevice()) return;
     
@@ -680,7 +674,6 @@ function handleTouchScroll() {
         const contentSection = document.getElementById("content");
         const contactsSection = document.getElementById("contacts");
         
-        // Проверяем, находится ли пользователь в конце секции и быстро ли скроллит
         if (Math.abs(diffY) > 5) {
             if (diffY < -5 && isAtSectionEnd(heroSection) && lastScroll === 0) {
                 smoothScrollTo(contentSection);
@@ -706,7 +699,6 @@ function handleTouchScroll() {
     }, { passive: true });
 }
 
-// Инициализация
 function initScroll() {
     if (!isTouchDevice()) {
         window.addEventListener("wheel", handleWheelScroll, { passive: false });
