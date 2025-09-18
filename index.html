@@ -553,6 +553,7 @@ section {
             <div class="link-item">
                 <div class="link-title"><i class="fas fa-list-alt"></i> <span>Список услуг</span></div>
                 <div class="link-description">Информация о предоставляемых услугах. Узнайте все детали о наших возможностях.</div>
+                <a href="https://t.me/counterpricebot" class="link-button" target="_blank"><i class="fas fa-external-link-alt"></i> Узнать больше</a>
                 <a href="https://counterprice.github.io/" class="link-button" target="_blank"><i class="fas fa-external-link-alt"></i> Узнать больше</a>
             </div>
 
@@ -591,135 +592,89 @@ if (isTouchDevice()) {
 }
 
 let lastScroll = 0;
+let scrollTimeout;
 let isScrolling = false;
-let wheelTimeout;
 
-// Функция для определения, находится ли пользователь в конце секции
-function isAtSectionEnd(section) {
-    const rect = section.getBoundingClientRect();
-    const sectionBottom = rect.bottom;
-    const windowHeight = window.innerHeight;
+function handleScroll(e) {
+    if (isTouchDevice()) {
+        return;
+    }
 
-    // Если низ секции близко к низу окна (в пределах 50px)
-    return sectionBottom <= windowHeight + 50;
-}
+    e.preventDefault();
 
-// Функция для определения, находится ли пользователь в начале секции
-function isAtSectionTop(section) {
-    const rect = section.getBoundingClientRect();
-    const sectionTop = rect.top;
+    if (isScrolling) return;
 
-    // Если верх секции близко к верху окна (в пределах 50px)
-    return sectionTop >= -50 && sectionTop <= 50;
-}
+    if (e.deltaY > 0) {
+        isScrolling = true;
 
-function smoothScrollTo(element) {
-    isScrolling = true;
-    element.scrollIntoView({behavior: "smooth"});
-
-    setTimeout(() => {
-        isScrolling = false;
-    }, 800);
-}
-
-// Обработчик скролла для ПК
-function handleWheelScroll(e) {
-    if (isTouchDevice() || isScrolling) return;
-
-    clearTimeout(wheelTimeout);
-    wheelTimeout = setTimeout(() => {
-        const heroSection = document.getElementById("hero");
-        const contentSection = document.getElementById("content");
-        const contactsSection = document.getElementById("contacts");
-
-        if (e.deltaY > 20) { // Скролл вниз
-        if (e.deltaY > 20) {
-            if (lastScroll === 0 && isAtSectionEnd(heroSection)) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-                document.querySelector('.scroll-indicator').classList.add('hidden');
-            } else if (lastScroll === 1 && isAtSectionEnd(contentSection)) {
-                smoothScrollTo(contactsSection);
-                lastScroll = 2;
-            }
-        } 
-        else if (e.deltaY < -20) { // Скролл вверх
-        else if (e.deltaY < -20) {
-            if (lastScroll === 2 && isAtSectionTop(contactsSection)) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-            } else if (lastScroll === 1 && isAtSectionTop(contentSection)) {
-                smoothScrollTo(heroSection);
-                lastScroll = 0;
-                document.querySelector('.scroll-indicator').classList.remove('hidden');
-            }
+        if (lastScroll === 0) {
+            document.getElementById("content").scrollIntoView({behavior: "smooth"});
+            lastScroll = 1;
+            document.querySelector('.scroll-indicator').classList.add('hidden');
+        } else if (lastScroll === 1) {
+            document.getElementById("contacts").scrollIntoView({behavior: "smooth"});
+            lastScroll = 2;
         }
-    }, 100);
+
+        setTimeout(() => {
+            isScrolling = false;
+        }, 1000);
+    } 
+    else if (e.deltaY < 0) {
+        isScrolling = true;
+
+        if (lastScroll === 2) {
+            document.getElementById("content").scrollIntoView({behavior: "smooth"});
+            lastScroll = 1;
+        } else if (lastScroll === 1) {
+            document.getElementById("hero").scrollIntoView({behavior: "smooth"});
+            lastScroll = 0;
+            document.querySelector('.scroll-indicator').classList.remove('hidden');
+        }
+
+        setTimeout(() => {
+            isScrolling = false;
+        }, 1000);
+    }
 }
 
-// Обработчик для мобильных устройств
-function handleTouchScroll() {
-    if (!isTouchDevice()) return;
+window.addEventListener("wheel", handleScroll, { passive: false });
 
+if (isTouchDevice()) {
     let touchStartY = 0;
-    let lastTouchY = 0;
-    let isScrollingManually = false;
 
     document.addEventListener('touchstart', function(e) {
         touchStartY = e.touches[0].clientY;
-        lastTouchY = touchStartY;
-        isScrollingManually = true;
     }, { passive: true });
 
-    document.addEventListener('touchmove', function(e) {
-        if (isScrolling) return;
+    document.addEventListener('touchend', function(e) {
+        const touchEndY = e.changedTouches[0].clientY;
+        const diffY = touchEndY - touchStartY;
 
-        const currentY = e.touches[0].clientY;
-        const diffY = currentY - lastTouchY;
-        lastTouchY = currentY;
-
-        const heroSection = document.getElementById("hero");
-        const contentSection = document.getElementById("content");
-        const contactsSection = document.getElementById("contacts");
-
-        // Проверяем, находится ли пользователь в конце секции и быстро ли скроллит
-        if (Math.abs(diffY) > 5) {
-            if (diffY < -5 && isAtSectionEnd(heroSection) && lastScroll === 0) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-                document.querySelector('.scroll-indicator').classList.add('hidden');
-            } else if (diffY < -5 && isAtSectionEnd(contentSection) && lastScroll === 1) {
-                smoothScrollTo(contactsSection);
-                lastScroll = 2;
+        if (Math.abs(diffY) > 50) { 
+            if (diffY < 0) {
+                if (lastScroll === 0) {
+                    document.getElementById("content").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 1;
+                    document.querySelector('.scroll-indicator').classList.add('hidden');
+                } else if (lastScroll === 1) {
+                    document.getElementById("contacts").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 2;
+                }
             } 
-            else if (diffY > 5 && isAtSectionTop(contactsSection) && lastScroll === 2) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-            } else if (diffY > 5 && isAtSectionTop(contentSection) && lastScroll === 1) {
-                smoothScrollTo(heroSection);
-                lastScroll = 0;
-                document.querySelector('.scroll-indicator').classList.remove('hidden');
+            else if (diffY > 0) {
+                if (lastScroll === 2) {
+                    document.getElementById("content").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 1;
+                } else if (lastScroll === 1) {
+                    document.getElementById("hero").scrollIntoView({behavior: "smooth"});
+                    lastScroll = 0;
+                    document.querySelector('.scroll-indicator').classList.remove('hidden');
+                }
             }
         }
     }, { passive: true });
-
-    document.addEventListener('touchend', function() {
-        isScrollingManually = false;
-    }, { passive: true });
 }
-
-// Инициализация
-function initScroll() {
-    if (!isTouchDevice()) {
-        window.addEventListener("wheel", handleWheelScroll, { passive: false });
-    }
-    handleTouchScroll();
-}
-
-window.addEventListener('load', function() {
-    initScroll();
-    checkLocalImage();
-});
 
 function checkLocalImage() {
     const img = document.querySelector('.logo');
@@ -728,6 +683,7 @@ function checkLocalImage() {
         this.alt = 'Контр-Культура (запасное изображение)'; 
     }
 }
+window.addEventListener('load', checkLocalImage);
 </script>
 
 </body>
