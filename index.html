@@ -591,106 +591,54 @@ if (isTouchDevice()) {
 
 let lastScroll = 0;
 let isScrolling = false;
-let wheelTimeout;
-
-function isAtSectionEnd(section) {
-    const rect = section.getBoundingClientRect();
-    const sectionBottom = rect.bottom;
-    const windowHeight = window.innerHeight;
-    return sectionBottom <= windowHeight + 50;
-}
-
-function isAtSectionTop(section) {
-    const rect = section.getBoundingClientRect();
-    const sectionTop = rect.top;
-    return sectionTop >= -50 && sectionTop <= 50;
-}
+let scrollTimeout;
+let lastScrollY = window.scrollY;
 
 function smoothScrollTo(element) {
     isScrolling = true;
-    element.scrollIntoView({behavior: "smooth"});
+    element.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => {
         isScrolling = false;
     }, 800);
 }
 
-function handleWheelScroll(e) {
-    if (isTouchDevice() || isScrolling) return;
+function handleScrollLogic() {
+    if (isScrolling) return;
 
-    clearTimeout(wheelTimeout);
-    wheelTimeout = setTimeout(() => {
-        const heroSection = document.getElementById("hero");
-        const contentSection = document.getElementById("content");
-        const contactsSection = document.getElementById("contacts");
+    const currentScrollY = window.scrollY;
+    const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+    lastScrollY = currentScrollY;
 
-        if (e.deltaY > 20) {
-            if (lastScroll === 0 && isAtSectionEnd(heroSection)) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-                document.querySelector('.scroll-indicator').classList.add('hidden');
-            } else if (lastScroll === 1 && window.scrollY + window.innerHeight >= contentSection.offsetTop + contentSection.offsetHeight - 50) {
-                smoothScrollTo(contactsSection);
-                lastScroll = 2;
-            }
+    const heroSection = document.getElementById("hero");
+    const contentSection = document.getElementById("content");
+    const contactsSection = document.getElementById("contacts");
+
+    if (scrollDirection === 'down') {
+        if (lastScroll === 0 && currentScrollY >= heroSection.offsetHeight - 50) {
+            smoothScrollTo(contentSection);
+            lastScroll = 1;
+            document.querySelector('.scroll-indicator').classList.add('hidden');
+        } else if (lastScroll === 1 && currentScrollY + window.innerHeight >= contentSection.offsetTop + contentSection.offsetHeight - 50) {
+            smoothScrollTo(contactsSection);
+            lastScroll = 2;
         }
-        else if (e.deltaY < -20) {
-            if (lastScroll === 2 && isAtSectionTop(contactsSection)) {
-                smoothScrollTo(contentSection);
-                lastScroll = 1;
-            } else if (lastScroll === 1 && isAtSectionTop(contentSection)) {
-                smoothScrollTo(heroSection);
-                lastScroll = 0;
-                document.querySelector('.scroll-indicator').classList.remove('hidden');
-            }
+    } else if (scrollDirection === 'up') {
+        if (lastScroll === 2 && currentScrollY <= contactsSection.offsetTop + 50) {
+            smoothScrollTo(contentSection);
+            lastScroll = 1;
+        } else if (lastScroll === 1 && currentScrollY <= contentSection.offsetTop + 50) {
+            smoothScrollTo(heroSection);
+            lastScroll = 0;
+            document.querySelector('.scroll-indicator').classList.remove('hidden');
         }
-    }, 100);
-}
-
-function handleTouchScroll() {
-    if (!isTouchDevice()) return;
-
-    let lastTouchY = 0;
-    
-    document.addEventListener('touchmove', function(e) {
-        if (isScrolling) return;
-        const currentY = e.touches[0].clientY;
-        const diffY = currentY - lastTouchY;
-        lastTouchY = currentY;
-
-        const heroSection = document.getElementById("hero");
-        const contentSection = document.getElementById("content");
-        const contactsSection = document.getElementById("contacts");
-
-        if (Math.abs(diffY) > 5) {
-            if (diffY < 0) {
-                if (lastScroll === 0 && isAtSectionEnd(heroSection)) {
-                    smoothScrollTo(contentSection);
-                    lastScroll = 1;
-                    document.querySelector('.scroll-indicator').classList.add('hidden');
-                } else if (lastScroll === 1 && window.scrollY + window.innerHeight >= contentSection.offsetTop + contentSection.offsetHeight - 50) {
-                    smoothScrollTo(contactsSection);
-                    lastScroll = 2;
-                }
-            }
-            else if (diffY > 0) {
-                if (lastScroll === 2 && isAtSectionTop(contactsSection)) {
-                    smoothScrollTo(contentSection);
-                    lastScroll = 1;
-                } else if (lastScroll === 1 && isAtSectionTop(contentSection)) {
-                    smoothScrollTo(heroSection);
-                    lastScroll = 0;
-                    document.querySelector('.scroll-indicator').classList.remove('hidden');
-                }
-            }
-        }
-    }, { passive: true });
+    }
 }
 
 function initScroll() {
-    if (!isTouchDevice()) {
-        window.addEventListener("wheel", handleWheelScroll, { passive: false });
-    }
-    handleTouchScroll();
+    window.addEventListener("scroll", () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(handleScrollLogic, 100);
+    }, { passive: true });
 }
 
 window.addEventListener('load', function() {
